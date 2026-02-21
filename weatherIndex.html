@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App</title>
+
+  <!-- CSS -->
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+    }
+    .weather-app {
+      background: #fff;
+      width: 340px;
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+    h1 {
+      margin-bottom: 18px;
+      color: #333;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #4facfe;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #3a8fdc;
+    }
+    .weather {
+      margin-top: 20px;
+      display: none;
+    }
+    .city {
+      font-size: 18px;
+      color: #444;
+    }
+    .temp {
+      font-size: 44px;
+      color: #ff6b6b;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+    .error {
+      margin-top: 12px;
+      color: red;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HTML -->
+  <div class="weather-app">
+    <h1>Weather App</h1>
+    <input type="text" id="locationInput" placeholder="Enter location">
+    <button onclick="getWeather()">Check Temperature</button>
+
+    <div class="weather" id="weatherBox">
+      <div class="city" id="cityName"></div>
+      <div class="temp" id="temperature"></div>
+    </div>
+
+    <div class="error" id="errorMsg"></div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Provided WeatherAPI key
+    const API_KEY = "b6e00f6a80464a2184b185442262001";
+
+    async function getWeather() {
+      const location = document.getElementById("locationInput").value.trim();
+      const weatherBox = document.getElementById("weatherBox");
+      const errorMsg = document.getElementById("errorMsg");
+
+      weatherBox.style.display = "none";
+      errorMsg.textContent = "";
+
+      if (!location) {
+        errorMsg.textContent = "Please enter a city name.";
+        return;
+      }
+
+      try {
+        const url = `https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${location}&aqi=yes`;
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error("City not found");
+        }
+
+        const data = await response.json();
+
+        document.getElementById("cityName").textContent = data.location.name + ", " + data.location.country;
+        document.getElementById("temperature").textContent = data.current.temp_c + "°C";
+
+        weatherBox.style.display = "block";
+      } catch (error) {
+        console.error(error);
+        errorMsg.textContent = "Unable to fetch weather data. Please check the city name.";
+      }
+
+    }
+  </script>
+
+</body>
+</html>
